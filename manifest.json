@@ -24,10 +24,7 @@
   "content_scripts": [
     {
       "matches": [
-        "https://*.walmart.com/orders/*",
-        "https://www.walmart.com/orders/*",
-        "https://*.walmart.com/account/purchase-history/*",
-        "https://*.walmart.com/account/purchase-history"
+        "https://*.walmart.com/*"
       ],
       "js": [
         "src/content.ts"
@@ -44,10 +41,7 @@
   "web_accessible_resources": [
     {
       "matches": [
-        "https://*.walmart.com/orders/*",
-        "https://www.walmart.com/orders/*",
-        "https://*.walmart.com/account/purchase-history/*",
-        "https://*.walmart.com/account/purchase-history"
+        "https://*.walmart.com/*"
       ],
       "resources": [
         "index.html",

@@ -340,6 +340,10 @@ if (document.documentElement.dataset.walmartSplitLoaded) {
                 const appUrl = chrome.runtime.getURL('index.html');
                 window.open(appUrl, '_blank');
             });
+            
+            // IMPORTANT: send a response back so the background script knows
+            // the message was received. Otherwise it throws an error and tries again.
+            _sendResponse({ success: true });
         }
     });
 }
