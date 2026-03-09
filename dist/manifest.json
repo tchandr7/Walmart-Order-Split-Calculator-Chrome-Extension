@@ -24,7 +24,7 @@
   "content_scripts": [
     {
       "js": [
-        "assets/content.ts-DQ0WArMw.js"
+        "assets/content.ts-DcMavJO0.js"
       ],
       "matches": [
         "https://*.walmart.com/*"
@@ -46,7 +46,7 @@
       "resources": [
         "index.html",
         "assets/*",
-        "assets/content.ts-DQ0WArMw.js"
+        "assets/content.ts-DcMavJO0.js"
       ],
       "use_dynamic_url": false
     }
