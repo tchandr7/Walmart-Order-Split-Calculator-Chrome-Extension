@@ -27,11 +27,8 @@ jobs:
         run: npm ci
 
       - name: Run npm security audit
-        # Audit level: critical only.
-        # Known exception: @crxjs/vite-plugin bundles rollup <2.80.0 (GHSA-mw96-cpmx-2vgc).
-        # This is a BUILD-TIME path traversal vuln — end users of the extension are not exposed.
-        # The vendor fix (downgrade to @crxjs/vite-plugin@1.0.14) is a breaking API change.
-        # Tracking resolution: https://github.com/crxjs/chrome-extension-tools/issues
+        # Fails the build only on CRITICAL vulnerabilities.
+        # (A HIGH severity in a build tool like Rollup falsely fails the build otherwise)
         run: npm audit --audit-level=critical
 
   build:
