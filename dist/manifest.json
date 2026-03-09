@@ -12,8 +12,11 @@
     "scripting"
   ],
   "host_permissions": [
-    "*://*.walmart.com/*"
+    "https://*.walmart.com/*"
   ],
+  "content_security_policy": {
+    "extension_pages": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; frame-ancestors 'none'"
+  },
   "background": {
     "service_worker": "service-worker-loader.js",
     "type": "module"
@@ -21,11 +24,14 @@
   "content_scripts": [
     {
       "js": [
-        "assets/content.ts-uCyw36Fo.js"
+        "assets/content.ts-DQ0WArMw.js"
       ],
       "matches": [
-        "*://*.walmart.com/*"
-      ]
+        "https://*.walmart.com/orders/*",
+        "https://www.walmart.com/orders/*",
+        "https://*.walmart.com/account/purchase-history*"
+      ],
+      "run_at": "document_idle"
     }
   ],
   "icons": {
@@ -37,8 +43,9 @@
   "web_accessible_resources": [
     {
       "matches": [
-        "*://*.walmart.com/*",
-        "<all_urls>"
+        "https://*.walmart.com/account/purchase-history*",
+        "https://*.walmart.com/orders/*",
+        "https://www.walmart.com/orders/*"
       ],
       "resources": [
         "index.html",
@@ -48,10 +55,12 @@
     },
     {
       "matches": [
-        "*://*.walmart.com/*"
+        "https://*.walmart.com/*",
+        "https://*.walmart.com/*",
+        "https://www.walmart.com/*"
       ],
       "resources": [
-        "assets/content.ts-uCyw36Fo.js"
+        "assets/content.ts-DQ0WArMw.js"
       ],
       "use_dynamic_url": false
     }

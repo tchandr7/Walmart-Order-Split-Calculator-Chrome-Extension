@@ -1,0 +1,102 @@
+name: Build & Verify Extension
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  release:
+    types: [published]
+
+permissions:
+  contents: write  # needed to upload release assets
+
+jobs:
+  security-audit:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies (from lockfile — no upgrades)
+        run: npm ci
+
+      - name: Run npm security audit
+        # Fails the build on HIGH or CRITICAL vulnerabilities
+        run: npm audit --audit-level=high
+
+  build:
+    name: Build Extension
+    runs-on: ubuntu-latest
+    needs: security-audit
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies (from lockfile)
+        run: npm ci
+
+      - name: Build extension
+        run: npm run build
+
+      - name: Generate SHA256 checksums for dist/
+        run: |
+          cd dist
+          find . -type f | sort | xargs sha256sum > ../dist-checksums.txt
+          cat ../dist-checksums.txt
+
+      - name: Upload dist/ as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: extension-dist-${{ github.sha }}
+          path: dist/
+          if-no-files-found: error
+
+      - name: Upload checksums as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-checksums-${{ github.sha }}
+          path: dist-checksums.txt
+
+  release:
+    name: Publish Release Assets
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'release'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build extension
+        run: npm run build
+
+      - name: Package extension as ZIP
+        run: |
+          VERSION=${{ github.ref_name }}
+          zip -r "walmart-split-extension-${VERSION}.zip" dist/
+          sha256sum "walmart-split-extension-${VERSION}.zip" > "walmart-split-extension-${VERSION}-checksums.txt"
+          echo "--- File checksums inside ZIP ---"
+          cd dist && find . -type f | sort | xargs sha256sum >> "../walmart-split-extension-${VERSION}-checksums.txt"
+
+      - name: Upload ZIP to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            walmart-split-extension-${{ github.ref_name }}.zip
+            walmart-split-extension-${{ github.ref_name }}-checksums.txt

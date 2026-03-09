@@ -3,10 +3,32 @@ console.log('[WalmartSplit] Background service worker started');
 chrome.action.onClicked.addListener((tab: chrome.tabs.Tab) => {
     console.log('[WalmartSplit] Icon clicked, tab URL:', tab.url);
 
-    if (!tab.id) return;
+    if (!tab.id || !tab.url) return;
 
-    // If not on a Walmart page, just open the split app directly
-    if (!tab.url?.includes('walmart.com')) {
+    // Defense-in-depth URL validation: use proper URL parsing, not string includes
+    // Prevents matches like evil-walmart.com or walmart.com.attacker.com
+    let tabUrl: URL;
+    try {
+        tabUrl = new URL(tab.url);
+    } catch {
+        return; // Unparseable URL — bail
+    }
+
+    const isWalmartHost = tabUrl.protocol === 'https:' &&
+        (tabUrl.hostname === 'www.walmart.com' || tabUrl.hostname.endsWith('.walmart.com'));
+
+    const isOrderPage = tabUrl.pathname.startsWith('/orders/') ||
+        tabUrl.pathname.startsWith('/account/purchase-history');
+
+    // If not on a Walmart order page, just open the split app directly
+    if (!isWalmartHost) {
+        chrome.tabs.create({ url: chrome.runtime.getURL('index.html') });
+        return;
+    }
+
+    if (!isOrderPage) {
+        // On walmart.com but not an order page — warn and still open the app
+        console.warn('[WalmartSplit] Not on an order page. Opening app without scraping.');
         chrome.tabs.create({ url: chrome.runtime.getURL('index.html') });
         return;
     }
