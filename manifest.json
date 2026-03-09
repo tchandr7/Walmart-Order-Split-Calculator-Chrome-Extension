@@ -25,9 +25,7 @@
     {
       "matches": [
         "https://*.walmart.com/orders/*",
-        "https://www.walmart.com/orders/*",
-        "https://*.walmart.com/account/purchase-history/*",
-        "https://*.walmart.com/account/purchase-history"
+        "https://*.walmart.com/account/*"
       ],
       "js": [
         "src/content.ts"
@@ -45,9 +43,7 @@
     {
       "matches": [
         "https://*.walmart.com/orders/*",
-        "https://www.walmart.com/orders/*",
-        "https://*.walmart.com/account/purchase-history/*",
-        "https://*.walmart.com/account/purchase-history"
+        "https://*.walmart.com/account/*"
       ],
       "resources": [
         "index.html",

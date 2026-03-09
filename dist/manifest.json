@@ -28,9 +28,7 @@
       ],
       "matches": [
         "https://*.walmart.com/orders/*",
-        "https://www.walmart.com/orders/*",
-        "https://*.walmart.com/account/purchase-history/*",
-        "https://*.walmart.com/account/purchase-history"
+        "https://*.walmart.com/account/*"
       ],
       "run_at": "document_idle"
     }
@@ -44,10 +42,8 @@
   "web_accessible_resources": [
     {
       "matches": [
-        "https://*.walmart.com/account/purchase-history",
-        "https://*.walmart.com/account/purchase-history/*",
-        "https://*.walmart.com/orders/*",
-        "https://www.walmart.com/orders/*"
+        "https://*.walmart.com/account/*",
+        "https://*.walmart.com/orders/*"
       ],
       "resources": [
         "index.html",
@@ -58,9 +54,7 @@
     {
       "matches": [
         "https://*.walmart.com/*",
-        "https://*.walmart.com/*",
-        "https://*.walmart.com/*",
-        "https://www.walmart.com/*"
+        "https://*.walmart.com/*"
       ],
       "resources": [
         "assets/content.ts-DQ0WArMw.js"
