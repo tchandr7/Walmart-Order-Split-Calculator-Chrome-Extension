@@ -27,8 +27,7 @@
         "assets/content.ts-DQ0WArMw.js"
       ],
       "matches": [
-        "https://*.walmart.com/orders/*",
-        "https://*.walmart.com/account/*"
+        "https://*.walmart.com/*"
       ],
       "run_at": "document_idle"
     }
@@ -42,21 +41,11 @@
   "web_accessible_resources": [
     {
       "matches": [
-        "https://*.walmart.com/account/*",
-        "https://*.walmart.com/orders/*"
-      ],
-      "resources": [
-        "index.html",
-        "assets/*"
-      ],
-      "use_dynamic_url": false
-    },
-    {
-      "matches": [
-        "https://*.walmart.com/*",
         "https://*.walmart.com/*"
       ],
       "resources": [
+        "index.html",
+        "assets/*",
         "assets/content.ts-DQ0WArMw.js"
       ],
       "use_dynamic_url": false

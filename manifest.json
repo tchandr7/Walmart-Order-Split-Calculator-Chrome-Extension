@@ -24,8 +24,7 @@
   "content_scripts": [
     {
       "matches": [
-        "https://*.walmart.com/orders/*",
-        "https://*.walmart.com/account/*"
+        "https://*.walmart.com/*"
       ],
       "js": [
         "src/content.ts"
@@ -42,8 +41,7 @@
   "web_accessible_resources": [
     {
       "matches": [
-        "https://*.walmart.com/orders/*",
-        "https://*.walmart.com/account/*"
+        "https://*.walmart.com/*"
       ],
       "resources": [
         "index.html",
