@@ -33,7 +33,12 @@ Unzip the downloaded file anywhere on your computer.
 1. Open Chrome and go to: **`chrome://extensions`**
 2. Enable **Developer mode** (toggle in the top-right corner)
 3. Click **"Load unpacked"**
-4. Navigate to the unzipped folder and select the **`dist`** subfolder inside it
+4. In the file picker, navigate **inside** the unzipped folder and select the **`dist`** subfolder
+
+> ⚠️ **Important:** Select the `dist` folder specifically — not the outer repo folder.
+> The correct path should end with `.../Walmart-Order-Split-Calculator-Chrome-Extension-main/dist`
+>
+> If you see an error about `_bmad-output`, you selected the wrong (outer) folder. Go one level deeper into `dist/`.
 
 The extension icon will appear in your Chrome toolbar.
 
