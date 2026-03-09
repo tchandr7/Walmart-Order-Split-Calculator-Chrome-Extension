@@ -1,73 +1,91 @@
-# React + TypeScript + Vite
+# 🛒 Walmart Order Split Calculator
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A free Chrome extension that scrapes your Walmart order details and calculates how to split the bill among friends — with full control over tax, tip, and per-item assignments.
 
-Currently, two official plugins are available:
+**No Chrome Web Store required. Free forever. Open source.**
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## ✨ Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- 🔍 **Auto-scrapes** item names, quantities, prices, tax, tip, and totals from your Walmart order page
+- 👥 **Roster-based splitting** — add everyone in your group
+- 🎛️ **Flexible tax & tip splits** — Equal, Proportional, or Manual per person
+- 🚫 **Exclude participants** from tax/tip (e.g. waive tax for someone who bought just one cheap item)
+- ✂️ **Split multi-quantity items** into individual line items
+- ✅ **Dual verification** — confirms both subtotal and grand total are fully accounted for
+- 📋 **Copy Summary** — one tap to copy a formatted breakdown to send in a group chat
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 📥 Installation (No Build Required)
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+> The `dist/` folder is pre-built and included in this repo. No Node.js or terminal needed.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Step 1 — Download the extension
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Click the green **`< > Code`** button on this page → **Download ZIP**
+
+Unzip the downloaded file anywhere on your computer.
+
+### Step 2 — Load it in Chrome
+
+1. Open Chrome and go to: **`chrome://extensions`**
+2. Enable **Developer mode** (toggle in the top-right corner)
+3. Click **"Load unpacked"**
+4. Navigate to the unzipped folder and select the **`dist`** subfolder inside it
+
+The extension icon will appear in your Chrome toolbar.
+
+### Step 3 — Use it
+
+1. Go to **[walmart.com](https://www.walmart.com)** and sign in
+2. Navigate to **Account → Purchase History** → click into a specific order
+3. Click the **Walmart Split** extension icon in your toolbar
+4. A new tab opens with your order pre-loaded — start splitting!
+
+---
+
+## 🔄 Updating
+
+When a new version is released:
+1. Download the ZIP again
+2. Replace the old unzipped folder with the new one
+3. Go to `chrome://extensions` → click the **↺ Refresh** icon on the extension
+
+---
+
+## 🔒 Privacy
+
+- **No data leaves your computer.** The extension reads your Walmart order page locally and stores everything in your browser's local storage only.
+- No accounts, no servers, no tracking.
+
+---
+
+## 🛠️ For Developers
+
+Want to modify the extension or contribute?
+
+```bash
+# Clone the repo
+git clone https://github.com/tchandr7/Walmart-Order-Split-Calculator-Chrome-Extension.git
+cd Walmart-Order-Split-Calculator-Chrome-Extension
+
+# Install dependencies
+npm install
+
+# Start dev server (for UI development)
+npm run dev
+
+# Build the extension
+npm run build
+# → loads the updated dist/ folder in chrome://extensions
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+**Tech stack:** Vite + React + TypeScript + Zustand + Tailwind CSS + CRXJS
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+---
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## 📄 License
+
+MIT — free to use, share, and modify.
