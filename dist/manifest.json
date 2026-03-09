@@ -29,7 +29,8 @@
       "matches": [
         "https://*.walmart.com/orders/*",
         "https://www.walmart.com/orders/*",
-        "https://*.walmart.com/account/purchase-history*"
+        "https://*.walmart.com/account/purchase-history/*",
+        "https://*.walmart.com/account/purchase-history"
       ],
       "run_at": "document_idle"
     }
@@ -43,7 +44,8 @@
   "web_accessible_resources": [
     {
       "matches": [
-        "https://*.walmart.com/account/purchase-history*",
+        "https://*.walmart.com/account/purchase-history",
+        "https://*.walmart.com/account/purchase-history/*",
         "https://*.walmart.com/orders/*",
         "https://www.walmart.com/orders/*"
       ],
@@ -55,6 +57,7 @@
     },
     {
       "matches": [
+        "https://*.walmart.com/*",
         "https://*.walmart.com/*",
         "https://*.walmart.com/*",
         "https://www.walmart.com/*"
