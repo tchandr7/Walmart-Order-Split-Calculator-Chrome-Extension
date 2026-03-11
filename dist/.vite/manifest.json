@@ -15,13 +15,13 @@
     ]
   },
   "src/background.ts": {
-    "file": "assets/background.ts-CH6QWUeB.js",
+    "file": "assets/background.ts-kSxaSODb.js",
     "name": "background.ts",
     "src": "src/background.ts",
     "isEntry": true
   },
   "src/content.ts": {
-    "file": "assets/content.ts-BYcww6ae.js",
+    "file": "assets/content.ts-C_OYaYb1.js",
     "name": "content.ts",
     "src": "src/content.ts",
     "isEntry": true

@@ -284,15 +284,15 @@ function extractTotals(): OrderTotals {
 
 // ─────────────────────────────────────────────────────────────
 // MAIN LISTENER
-// Guard uses document.documentElement.dataset so it is shared across
-// ALL content-script isolated worlds in the same tab. Using `window`
-// would NOT work because each injection gets its own global scope.
+// Uses `window` because Chrome's isolated worlds persist per-extension
+// but are reset when the extension is reloaded/updated.
+// Using `document.dataset` causes errors during extension dev reloads.
 // ─────────────────────────────────────────────────────────────
 
-if (document.documentElement.dataset.walmartSplitLoaded) {
-    console.log('[WalmartSplit] Listener already registered (cross-world guard) — skipping duplicate injection.');
+if ((window as any).__walmartSplitLoaded) {
+    console.log('[WalmartSplit] Listener already registered in this isolated world — skipping duplicate injection.');
 } else {
-    document.documentElement.dataset.walmartSplitLoaded = 'true';
+    (window as any).__walmartSplitLoaded = true;
 
     chrome.runtime.onMessage.addListener((request: any, _sender, _sendResponse) => {
         if (request.action === 'extract_receipt') {
