@@ -167,7 +167,7 @@ function App() {
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
                   placeholder="Type name & hit Enter"
-                  className="flex-1 border border-slate-300 rounded-md px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  className="flex-1 border border-slate-300 rounded-md px-4 py-1.5 h-[42px] text-lg font-medium focus:ring-2 focus:ring-blue-500 focus:outline-none placeholder:font-normal placeholder:text-base"
                 />
               </form>
               <div className="flex flex-wrap gap-2">
