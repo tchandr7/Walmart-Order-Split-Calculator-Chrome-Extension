@@ -1,6 +1,8 @@
 # 🛒 Walmart Order Split Calculator
 
-A free Chrome extension that scrapes your Walmart order details and calculates how to split the bill among friends — with full control over tax, tip, and per-item assignments.
+> **👋 Hey there!** Just a heads up: this is a super simple, casual project that was entirely vibe coded in a couple of hours. There wasn't too much thought put into it, just enough to get the job done so we can skip doing math manually and save some time.
+
+This is a free Chrome extension that scrapes your Walmart order details and calculates how to split the bill among friends — with full control over tax, tip, and per-item assignments.
 
 **No Chrome Web Store required. Free forever. Open source.**
 
