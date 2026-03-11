@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { ReceiptData, Participant } from '../lib/types';
+import type { ReceiptData, Participant, ReceiptItem } from '../lib/types';
 
 export type SplitMethod = 'proportional' | 'even' | 'manual';
 
@@ -25,6 +25,7 @@ interface SplitState {
     toggleItemAssignment: (itemId: string, participantId: string) => void;
     setCustomAssignment: (itemId: string, participantId: string, amount: number) => void;
     splitItemByQuantity: (itemId: string) => void;
+    undoSplitQuantity: (originalItemId: string) => void;
     confirmItem: (itemId: string) => void;
     setTaxSplitMethod: (method: SplitMethod) => void;
     setTipSplitMethod: (method: SplitMethod) => void;
@@ -154,16 +155,58 @@ export const useSplitStore = create<SplitState>()(
                     const item = newItems[itemIndex];
                     if (item.quantity > 1) {
                         const unitPrice = Number((item.price / item.quantity).toFixed(2));
+                        // Mark them heavily so we can undo this action easily
                         const splitItems = Array.from({ length: item.quantity }).map((_, i) => ({
                             id: `${item.id}-split-${i + 1}-${Date.now()}`,
                             name: item.name,
                             price: unitPrice,
                             quantity: 1,
-                            assignments: {}
+                            assignments: {},
+                            splitFromId: item.id
                         }));
                         newItems.splice(itemIndex, 1, ...splitItems);
                     }
                 }
+                return { receipt: { ...state.receipt, items: newItems } };
+            }),
+
+            undoSplitQuantity: (originalItemId) => set((state) => {
+                if (!state.receipt) return state;
+                
+                const newItems: ReceiptItem[] = [];
+                let mergedPrice = 0;
+                let mergedQuantity = 0;
+                let mergedName = '';
+                let firstIndex = -1;
+                
+                state.receipt.items.forEach((item) => {
+                    if (item.splitFromId === originalItemId) {
+                        mergedPrice += item.price;
+                        mergedQuantity += item.quantity;
+                        mergedName = item.name;
+                        if (firstIndex === -1) firstIndex = newItems.length;
+                    } else {
+                        newItems.push(item);
+                    }
+                });
+
+                if (mergedQuantity > 0) {
+                    const originalItem: ReceiptItem = {
+                        id: originalItemId,
+                        name: mergedName,
+                        price: Number(mergedPrice.toFixed(2)),
+                        quantity: mergedQuantity,
+                        assignments: {},
+                        isConfirmed: false
+                    };
+                    
+                    if (firstIndex > -1) {
+                        newItems.splice(firstIndex, 0, originalItem);
+                    } else {
+                        newItems.push(originalItem);
+                    }
+                }
+                
                 return { receipt: { ...state.receipt, items: newItems } };
             }),
 

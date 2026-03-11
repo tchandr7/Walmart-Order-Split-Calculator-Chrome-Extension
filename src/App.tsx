@@ -11,7 +11,7 @@ function App() {
     taxSplitMethod, tipSplitMethod, setTaxSplitMethod, setTipSplitMethod,
     taxManualAmounts, tipManualAmounts, setManualTaxAmount, setManualTipAmount,
     taxExcludedIds, tipExcludedIds, setTaxExcludedIds, setTipExcludedIds,
-    payerId, setPayerId, addParticipantAndSetPayer, splitItemByQuantity, confirmItem, renameParticipant
+    payerId, setPayerId, addParticipantAndSetPayer, splitItemByQuantity, undoSplitQuantity, confirmItem, renameParticipant
   } = useSplitStore();
 
   const [newName, setNewName] = useState('');
@@ -231,6 +231,7 @@ function App() {
                     onToggle={(pId) => toggleItemAssignment(item.id, pId)}
                     onCustomSet={(pId, amt) => setCustomAssignment(item.id, pId, amt)}
                     onSplitQuantity={() => splitItemByQuantity(item.id)}
+                    onUndoSplit={item.splitFromId ? () => undoSplitQuantity(item.splitFromId!) : undefined}
                     onConfirm={() => confirmItem(item.id)}
                   />
                 ))}

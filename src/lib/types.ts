@@ -5,6 +5,7 @@ export interface ReceiptItem {
     quantity: number;
     isConfirmed?: boolean;
     assignments: Record<string, number>; // Record of participantId to amount paid, e.g., { "UserA": 5.00, "UserB": 5.00 }
+    splitFromId?: string; // Original item ID if this was created from a quantity split
 }
 
 export interface ReceiptData {

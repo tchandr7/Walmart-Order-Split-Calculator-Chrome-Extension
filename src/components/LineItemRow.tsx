@@ -9,10 +9,11 @@ interface Props {
     onToggle: (participantId: string) => void;
     onCustomSet: (participantId: string, amount: number) => void;
     onSplitQuantity?: () => void;
+    onUndoSplit?: () => void;
     onConfirm: () => void;
 }
 
-export const LineItemRow: React.FC<Props> = ({ item, participants, onToggle, onCustomSet, onSplitQuantity, onConfirm }) => {
+export const LineItemRow: React.FC<Props> = ({ item, participants, onToggle, onCustomSet, onSplitQuantity, onUndoSplit, onConfirm }) => {
     const [isCustomOpen, setIsCustomOpen] = useState(false);
 
     const assignedSum = Object.values(item.assignments).reduce((a, b) => a + Number(b), 0);
@@ -44,6 +45,15 @@ export const LineItemRow: React.FC<Props> = ({ item, participants, onToggle, onC
                                     </button>
                                 )}
                             </>
+                        )}
+                        {item.splitFromId && onUndoSplit && (
+                            <button
+                                onClick={onUndoSplit}
+                                className="text-xs font-medium text-amber-600 bg-amber-100 hover:bg-amber-200 hover:text-amber-800 px-2 py-0.5 rounded transition-colors ml-2"
+                                title="Undo split and merge back with other identical items"
+                            >
+                                Undo Split
+                            </button>
                         )}
                     </div>
                 </div>
