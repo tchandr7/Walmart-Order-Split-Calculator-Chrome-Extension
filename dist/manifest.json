@@ -14,6 +14,9 @@
   "host_permissions": [
     "https://*.walmart.com/*"
   ],
+  "content_security_policy": {
+    "extension_pages": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; frame-ancestors 'none'"
+  },
   "background": {
     "service_worker": "service-worker-loader.js",
     "type": "module"
@@ -21,7 +24,7 @@
   "content_scripts": [
     {
       "js": [
-        "assets/content.ts-C_OYaYb1.js"
+        "assets/content.ts-B8fT_ktg.js"
       ],
       "matches": [
         "https://*.walmart.com/*"
@@ -43,7 +46,7 @@
       "resources": [
         "index.html",
         "assets/*",
-        "assets/content.ts-C_OYaYb1.js"
+        "assets/content.ts-B8fT_ktg.js"
       ],
       "use_dynamic_url": false
     }

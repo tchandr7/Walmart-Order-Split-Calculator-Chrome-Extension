@@ -232,9 +232,9 @@ interface OrderTotals {
 function extractTotals(): OrderTotals {
     const grossSubtotal = findSummaryAmount(['subtotal', 'items subtotal', 'merchandise']);
     const savings = findSummaryAmount(['savings', 'promo savings', 'discount']);
-    const tax = findSummaryAmount(['estimated tax', 'sales tax', 'tax']);
-    const tip = findSummaryAmount(['driver tip', 'tip', 'gratuity']);
-    const fees = findSummaryAmount(['delivery fee', 'service fee', 'express delivery', 'convenience fee']);
+    const tax = findSummaryAmount(['estimated tax', 'sales tax', 'tax', 'taxes']);
+    const tip = findSummaryAmount(['driver tip', 'tip', 'gratuity', 'tips']);
+    const fees = findSummaryAmount(['delivery fee', 'service fee', 'express delivery', 'convenience fee', 'fee', 'fees']);
     const total = findSummaryAmount(['order total', 'total', 'amount charged', 'charged']);
 
     // Use post-savings subtotal: gross - savings
