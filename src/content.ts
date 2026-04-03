@@ -237,14 +237,15 @@ function extractTotals(): OrderTotals {
     const fees = findSummaryAmount(['delivery fee', 'service fee', 'express delivery', 'convenience fee', 'fee', 'fees']);
     const total = findSummaryAmount(['order total', 'total', 'amount charged', 'charged']);
 
-    // Use post-savings subtotal: gross - savings
-    // Sanity check: if subtotal > total, we grabbed the pre-savings gross — fall back to total - tax - tip - fees
-    let subtotal = savings > 0 ? Number((grossSubtotal - savings).toFixed(2)) : grossSubtotal;
-    if (total > 0 && subtotal > total) {
+    // Use the extracted subtotal directly since Walmart's 'Subtotal' line already 
+    // accounts for savings. (The pre-savings line is usually labeled 'Items (X)').
+    let subtotal = grossSubtotal;
+    if (total > 0 && Math.abs(total - tax - tip - fees - subtotal) > 0.05) {
+        // Fallback: If the extracted subtotal doesn't math out to the grand total, deduce it.
         subtotal = Number((total - tax - tip - fees).toFixed(2));
-        console.log(`[WalmartSplit] Subtotal sanity fix: was $${grossSubtotal}, corrected to $${subtotal} (total - tax - tip - fees)`);
+        console.log(`[WalmartSplit] Subtotal sanity fix logic applied. Corrected to $${subtotal}`);
     }
-    console.log(`[WalmartSplit] Totals raw: gross=$${grossSubtotal} savings=$${savings} → subtotal=$${subtotal} tax=$${tax} tip=$${tip} fees=$${fees} total=$${total}`);
+    console.log(`[WalmartSplit] Totals raw: gross=$${grossSubtotal} savings=$${savings} → final subtotal=$${subtotal} tax=$${tax} tip=$${tip} fees=$${fees} total=$${total}`);
 
 
     // Fallback: try data-testid selectors
