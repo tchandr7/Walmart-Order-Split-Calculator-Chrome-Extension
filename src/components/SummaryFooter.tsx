@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { Participant, ReceiptData } from '../lib/types';
 import { useSplitStore } from '../store/useSplitStore';
+import { useCalculateSplit } from '../lib/useCalculateSplit';
 
 interface Props {
     participants: Participant[];
@@ -8,76 +9,21 @@ interface Props {
 }
 
 export const SummaryFooter: React.FC<Props> = ({ participants, receipt }) => {
-    const { taxSplitMethod, tipSplitMethod, taxManualAmounts, tipManualAmounts, payerId,
-        taxExcludedIds, tipExcludedIds } = useSplitStore();
+    const { taxSplitMethod, tipSplitMethod, payerId } = useSplitStore();
+    const splitData = useCalculateSplit();
     const [copied, setCopied] = useState(false);
     const [showBreakdown, setShowBreakdown] = useState(false);
 
-    if (!receipt) return null;
+    if (!receipt || !splitData) return null;
 
-    // Calculate global logic
-    let assignedTotal = 0;
-
-    // Calculate participant specific stats
-    const ptStats: Record<string, { sub: number, tax: number, tip: number, total: number }> = {};
-    participants.forEach(p => ptStats[p.id] = { sub: 0, tax: 0, tip: 0, total: 0 });
-
-    receipt.items.forEach(item => {
-        Object.entries(item.assignments).forEach(([pId, amount]) => {
-            assignedTotal += amount;
-            if (ptStats[pId]) ptStats[pId].sub += amount;
-        });
-    });
+    const { ptStats, assignedTotal } = splitData;
 
     // ── Subtotal check: do item assignments sum to receipt.subtotal? ──
     const totalSub = Number(assignedTotal.toFixed(2));
     const rSub = Number(receipt.subtotal.toFixed(2));
     const subtotalBalances = Math.abs(totalSub - rSub) < 0.05;
 
-    if (subtotalBalances && totalSub > 0) {
-        // Participants who have item assignments (sub > 0)
-        const activeParticipants = participants.filter(p => ptStats[p.id].sub > 0);
-
-        // Tax: exclude specified participants, redistribute among the rest
-        const taxActive = activeParticipants.filter(p => !taxExcludedIds.includes(p.id));
-        const taxActiveSubTotal = taxActive.reduce((s, p) => s + ptStats[p.id].sub, 0);
-        const taxEvenShare = taxActive.length > 0 ? 1 / taxActive.length : 0;
-
-        // Tip: exclude specified participants, redistribute among the rest
-        const tipActive = activeParticipants.filter(p => !tipExcludedIds.includes(p.id));
-        const tipActiveSubTotal = tipActive.reduce((s, p) => s + ptStats[p.id].sub, 0);
-        const tipEvenShare = tipActive.length > 0 ? 1 / tipActive.length : 0;
-
-        participants.forEach(p => {
-            if (ptStats[p.id].sub <= 0) return;
-
-            // ── TAX ──
-            if (taxSplitMethod === 'manual') {
-                ptStats[p.id].tax = taxManualAmounts[p.id] ?? 0;
-            } else if (taxExcludedIds.includes(p.id)) {
-                ptStats[p.id].tax = 0; // waived
-            } else {
-                const taxPropShare = taxActiveSubTotal > 0 ? ptStats[p.id].sub / taxActiveSubTotal : 0;
-                const taxShare = taxSplitMethod === 'proportional' ? taxPropShare : taxEvenShare;
-                ptStats[p.id].tax = taxShare * receipt.tax;
-            }
-
-            // ── TIP / FEES ──
-            if (tipSplitMethod === 'manual') {
-                ptStats[p.id].tip = tipManualAmounts[p.id] ?? 0;
-            } else if (tipExcludedIds.includes(p.id)) {
-                ptStats[p.id].tip = 0; // waived
-            } else {
-                const tipPropShare = tipActiveSubTotal > 0 ? ptStats[p.id].sub / tipActiveSubTotal : 0;
-                const tipShare = tipSplitMethod === 'proportional' ? tipPropShare : tipEvenShare;
-                ptStats[p.id].tip = tipShare * (receipt.tip + receipt.fees);
-            }
-
-            ptStats[p.id].total = ptStats[p.id].sub + ptStats[p.id].tax + ptStats[p.id].tip;
-        });
-    }
-
-    // ── Grand total check: do per-person totals (sub+tax+tip) sum to receipt.total? ──
+    // ── Grand total check: do per-person totals sum to receipt.total? ──
     const distributedTotal = Number(
         Object.values(ptStats).reduce((sum, p) => sum + p.total, 0).toFixed(2)
     );
@@ -98,7 +44,6 @@ export const SummaryFooter: React.FC<Props> = ({ participants, receipt }) => {
             if (ptStats[p.id].total > 0) {
                 t += `👤 ${p.name}: $${ptStats[p.id].total.toFixed(2)}\n`;
 
-                // Add item breakdown
                 const pItems = receipt.items.filter(item => p.id in item.assignments && item.assignments[p.id] > 0);
                 if (pItems.length > 0) {
                     pItems.forEach(item => {
@@ -106,7 +51,6 @@ export const SummaryFooter: React.FC<Props> = ({ participants, receipt }) => {
                     });
                 }
 
-                // Add tax and tip info
                 if (ptStats[p.id].tax > 0 || ptStats[p.id].tip > 0) {
                     t += `   ▫️ Tax ($${ptStats[p.id].tax.toFixed(2)}) & Tip/Fees ($${ptStats[p.id].tip.toFixed(2)})\n`;
                 }
@@ -122,7 +66,7 @@ export const SummaryFooter: React.FC<Props> = ({ participants, receipt }) => {
 
     return (
         <div className="sticky bottom-0 bg-white border-t sm:px-6 px-4 py-4 shadow-[0_-4px_10px_rgba(0,0,0,0.05)] z-10 w-full">
-            <div className="max-w-3xl mx-auto flex flex-col gap-4">
+            <div className="max-w-5xl mx-auto flex flex-col gap-4">
 
                 {/* Breakdown View */}
                 {showBreakdown && subtotalBalances && totalSub > 0 && (
