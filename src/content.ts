@@ -126,6 +126,49 @@ function extractItems(): RawItem[] {
             '[class*="price"]',
         ], el);
 
+        // Check if the item is in an "unavailable" or "canceled" section
+        let isUnavailable = false;
+        let currentLoc: Element | null = el;
+        const unavailableRegex = /(?:unavailable|canceled|cancelled)\s+items?/i;
+        
+        // Search up to 10 levels deep to avoid infinite loops and performance issues
+        for (let i = 0; i < 10; i++) {
+            if (!currentLoc) break;
+            
+            // Only check sibling if it's reasonably small (not a huge wrapper)
+            const prevSibling = currentLoc.previousElementSibling;
+            if (prevSibling) {
+                const prevText = prevSibling.textContent || '';
+                if (prevText.length < 200 && unavailableRegex.test(prevText)) {
+                    isUnavailable = true;
+                    break;
+                }
+            }
+            
+            // Only check first child if it's reasonably small
+            const parentEl: Element | null = currentLoc.parentElement;
+            const firstChildEl: Element | null = parentEl ? parentEl.firstElementChild : null;
+            if (firstChildEl && firstChildEl !== currentLoc) {
+                const firstChildText = firstChildEl.textContent || '';
+                if (firstChildText.length < 200 && unavailableRegex.test(firstChildText)) {
+                    isUnavailable = true;
+                    break;
+                }
+            }
+
+            currentLoc = currentLoc.parentElement;
+        }
+
+        // Also check for greyed out image (Walmart uses o-30 class for unavailable items)
+        if (!isUnavailable && el.querySelector('img.o-30')) {
+            isUnavailable = true;
+        }
+
+        if (isUnavailable) {
+            console.log(`[WalmartSplit] Skipping unavailable/canceled item: "${name}"`);
+            continue;
+        }
+
         // Quantity: ONLY match explicit "Qty N" or "Quantity: N" patterns.
         // Avoid \b because adjacent elements in textContent have no spaces (e.g. "BagQty 3").
         // Sanity cap at 99 — reject false positives from product descriptions like "60-80 Count".
