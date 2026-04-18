@@ -3,7 +3,7 @@ import { useSplitStore } from '../store/useSplitStore';
 import { useCalculateSplit } from '../lib/useCalculateSplit';
 
 export const RunningSplitWidget: React.FC = () => {
-    const { receipt, participants, payerId } = useSplitStore();
+    const { receipt, participants, payerName } = useSplitStore();
     const splitData = useCalculateSplit();
     const [copied, setCopied] = useState(false);
 
@@ -12,8 +12,7 @@ export const RunningSplitWidget: React.FC = () => {
     const activeParticipants = participants.filter(p => ptStats[p.id].total > 0);
 
     const generateSummary = () => {
-        const payerName = payerId ? participants.find(p => p.id === payerId)?.name || 'Payer' : 'Payer';
-        let t = `🧾 Walmart Order Split Summary\n(Pay to: ${payerName})\n\n`;
+        let t = `🧾 Walmart Order Split Summary\n(Pay to: ${payerName || 'Payer'})\n\n`;
 
         // Calculate actual utilized totals
         const actualSub = Object.values(ptStats).reduce((sum, p) => sum + p.sub, 0);

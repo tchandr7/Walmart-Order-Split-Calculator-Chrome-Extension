@@ -9,7 +9,7 @@ interface Props {
 }
 
 export const SummaryFooter: React.FC<Props> = ({ participants, receipt }) => {
-    const { taxSplitMethod, tipSplitMethod, payerId } = useSplitStore();
+    const { taxSplitMethod, tipSplitMethod, payerName } = useSplitStore();
     const splitData = useCalculateSplit();
     const [copied, setCopied] = useState(false);
     const [showBreakdown, setShowBreakdown] = useState(false);
@@ -32,8 +32,7 @@ export const SummaryFooter: React.FC<Props> = ({ participants, receipt }) => {
     const fullyBalanced = subtotalBalances && grandTotalBalances;
 
     const generateSummary = () => {
-        const payerName = payerId ? participants.find(p => p.id === payerId)?.name || 'Payer' : 'Payer';
-        let t = `🧾 Walmart Order Split Summary\n(Pay to: ${payerName})\n\n`;
+        let t = `🧾 Walmart Order Split Summary\n(Pay to: ${payerName || 'Payer'})\n\n`;
 
         t += `Subtotal: $${receipt.subtotal.toFixed(2)}\n`;
         t += `Tax: $${receipt.tax.toFixed(2)}\n`;

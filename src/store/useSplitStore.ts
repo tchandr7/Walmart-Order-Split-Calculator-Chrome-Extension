@@ -7,7 +7,7 @@ export type SplitMethod = 'proportional' | 'even' | 'manual';
 interface SplitState {
     participants: Participant[];
     receipt: ReceiptData | null;
-    payerId: string | null;
+    payerName: string;
     taxSplitMethod: SplitMethod;
     tipSplitMethod: SplitMethod;
     taxManualAmounts: Record<string, number>;
@@ -16,10 +16,9 @@ interface SplitState {
     tipExcludedIds: string[];
 
     // Actions
-    setPayerId: (id: string | null) => void;
+    setPayerName: (name: string) => void;
     setReceipt: (data: ReceiptData) => void;
     addParticipant: (name: string) => void;
-    addParticipantAndSetPayer: (name: string) => void;
     removeParticipant: (id: string) => void;
     renameParticipant: (id: string, name: string) => void;
     toggleItemAssignment: (itemId: string, participantId: string) => void;
@@ -39,9 +38,9 @@ interface SplitState {
 export const useSplitStore = create<SplitState>()(
     persist(
         (set) => ({
-            participants: [{ id: '1', name: 'Me' }],
+            participants: [],
             receipt: null,
-            payerId: '1',
+            payerName: 'Me',
             taxSplitMethod: 'proportional',
             tipSplitMethod: 'proportional',
             taxManualAmounts: {},
@@ -57,7 +56,7 @@ export const useSplitStore = create<SplitState>()(
                 taxExcludedIds: [],
                 tipExcludedIds: [],
             }),
-            setPayerId: (id) => set({ payerId: id }),
+            setPayerName: (name) => set({ payerName: name }),
             setTaxSplitMethod: (method) => set({ taxSplitMethod: method }),
             setTipSplitMethod: (method) => set({ tipSplitMethod: method }),
             setTaxExcludedIds: (ids) => set({ taxExcludedIds: ids }),
@@ -69,21 +68,18 @@ export const useSplitStore = create<SplitState>()(
                 tipManualAmounts: { ...state.tipManualAmounts, [participantId]: amount }
             })),
 
-            renameParticipant: (id, name) => set((state) => ({
-                participants: state.participants.map(p => p.id === id ? { ...p, name } : p)
-            })),
+            renameParticipant: (id, name) => set((state) => {
+                const oldName = state.participants.find(p => p.id === id)?.name;
+                const newPayerName = state.payerName === oldName ? name : state.payerName;
+                return {
+                    participants: state.participants.map(p => p.id === id ? { ...p, name } : p),
+                    payerName: newPayerName
+                };
+            }),
 
             addParticipant: (name) => set((state) => ({
                 participants: [...state.participants, { id: Date.now().toString(), name }]
             })),
-
-            addParticipantAndSetPayer: (name) => set((state) => {
-                const id = Date.now().toString();
-                return {
-                    participants: [...state.participants, { id, name }],
-                    payerId: id
-                };
-            }),
 
             removeParticipant: (id) => set((state) => {
                 const newParticipants = state.participants.filter(p => p.id !== id);
@@ -102,8 +98,7 @@ export const useSplitStore = create<SplitState>()(
                 }
                 return {
                     participants: newParticipants,
-                    receipt: newReceipt,
-                    payerId: state.payerId === id ? null : state.payerId
+                    receipt: newReceipt
                 };
             }),
 
@@ -220,8 +215,8 @@ export const useSplitStore = create<SplitState>()(
 
             clearStore: () => set({
                 receipt: null,
-                payerId: '1',
-                participants: [{ id: '1', name: 'Me' }],
+                payerName: 'Me',
+                participants: [],
                 taxSplitMethod: 'proportional',
                 tipSplitMethod: 'proportional',
                 taxManualAmounts: {},

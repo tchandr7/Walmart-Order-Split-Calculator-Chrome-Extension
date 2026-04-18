@@ -12,14 +12,12 @@ function App() {
     taxSplitMethod, tipSplitMethod, setTaxSplitMethod, setTipSplitMethod,
     taxManualAmounts, tipManualAmounts, setManualTaxAmount, setManualTipAmount,
     taxExcludedIds, tipExcludedIds, setTaxExcludedIds, setTipExcludedIds,
-    payerId, setPayerId, addParticipantAndSetPayer, splitItemByQuantity, undoSplitQuantity, confirmItem, renameParticipant
+    payerName, setPayerName, splitItemByQuantity, undoSplitQuantity, confirmItem
   } = useSplitStore();
 
   const [newName, setNewName] = useState('');
   const [newPayerName, setNewPayerName] = useState('');
   const [isPayerOpen, setIsPayerOpen] = useState(false);
-  const [isRenamingMe, setIsRenamingMe] = useState(false);
-  const [meNameDraft, setMeNameDraft] = useState('');
 
   useEffect(() => {
     if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
@@ -38,11 +36,6 @@ function App() {
       addParticipant(newName.trim());
       setNewName('');
     }
-  };
-
-  const saveRenameMe = () => {
-    if (meNameDraft.trim()) renameParticipant('1', meNameDraft.trim());
-    setIsRenamingMe(false);
   };
 
   const loadDummyData = () => {
@@ -112,7 +105,7 @@ function App() {
                 <div className="flex items-center gap-3">
                   <span className="bg-emerald-100 text-emerald-800 text-xs px-2 py-0.5 rounded-md uppercase tracking-wider font-bold">Payer</span>
                   <h2 className="text-lg font-semibold text-slate-800">
-                    {participants.find(p => p.id === payerId)?.name || 'Select Payer'}
+                    {payerName || 'Select Payer'}
                   </h2>
                 </div>
                 <button
@@ -130,9 +123,9 @@ function App() {
                     {participants.map(p => (
                       <button
                         key={`payer-${p.id}`}
-                        onClick={() => { setPayerId(p.id); setIsPayerOpen(false); }}
+                        onClick={() => { setPayerName(p.name); setIsPayerOpen(false); }}
                         className={`px-4 py-2 rounded-full text-base font-medium transition-all duration-75 border
-                          ${payerId === p.id ? 'bg-emerald-600 text-white border-emerald-600 font-bold' : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'}`}
+                          ${payerName === p.name ? 'bg-emerald-600 text-white border-emerald-600 font-bold' : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'}`}
                       >
                         {p.name}
                       </button>
@@ -141,7 +134,7 @@ function App() {
                   <form onSubmit={(e) => {
                     e.preventDefault();
                     if (newPayerName.trim()) {
-                      addParticipantAndSetPayer(newPayerName.trim());
+                      setPayerName(newPayerName.trim());
                       setNewPayerName('');
                       setIsPayerOpen(false);
                     }
@@ -150,11 +143,11 @@ function App() {
                       type="text"
                       value={newPayerName}
                       onChange={(e) => setNewPayerName(e.target.value)}
-                      placeholder="Or add a new name..."
+                      placeholder="Enter payer name..."
                       className="flex-1 border border-slate-300 rounded-md px-4 py-2 text-base focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                     />
                     <button type="submit" className="bg-slate-100 text-slate-700 px-4 py-2 text-base font-medium rounded-md hover:bg-slate-200">
-                      Add & Select
+                      Save
                     </button>
                   </form>
                 </div>
@@ -176,35 +169,7 @@ function App() {
               <div className="flex flex-wrap gap-2">
                 {participants.map(p => (
                   <div key={p.id} className="group relative">
-                    {p.id === '1' ? (
-                      isRenamingMe ? (
-                        <div className="flex items-center gap-1">
-                          <input
-                            autoFocus
-                            type="text"
-                            value={meNameDraft}
-                            onChange={(e) => setMeNameDraft(e.target.value)}
-                            onKeyDown={(e) => { if (e.key === 'Enter') saveRenameMe(); if (e.key === 'Escape') setIsRenamingMe(false); }}
-                            placeholder={p.name}
-                            className="border border-blue-400 rounded-full px-4 py-2 text-base focus:ring-2 focus:ring-blue-500 focus:outline-none w-32"
-                          />
-                          <button onClick={saveRenameMe} className="text-xs text-blue-600 font-semibold hover:underline">Save</button>
-                          <button onClick={() => setIsRenamingMe(false)} className="text-xs text-slate-400 hover:underline">Cancel</button>
-                        </div>
-                      ) : (
-                        <span className="px-4 py-2 bg-slate-100 text-slate-700 font-medium rounded-full text-base inline-flex items-center gap-2">
-                          {p.name}
-                          <button
-                            onClick={() => { setMeNameDraft(p.name === 'Me' ? '' : p.name); setIsRenamingMe(true); }}
-                            className="text-slate-400 hover:text-blue-500 transition-colors text-xs"
-                            title="Set your name (optional)"
-                          >
-                            ✏️
-                          </button>
-                        </span>
-                      )
-                    ) : (
-                      <span className="px-4 py-2 bg-slate-100 text-slate-700 font-medium rounded-full text-base inline-flex items-center gap-2">
+                    <span className="px-4 py-2 bg-slate-100 text-slate-700 font-medium rounded-full text-base inline-flex items-center gap-2">
                         {p.name}
                         <button
                           onClick={() => removeParticipant(p.id)}
@@ -213,8 +178,7 @@ function App() {
                         >
                           &times;
                         </button>
-                      </span>
-                    )}
+                    </span>
                   </div>
                 ))}
               </div>
